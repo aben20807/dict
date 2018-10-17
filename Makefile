@@ -4,7 +4,7 @@ TEST_DATA = s Tai
 
 CFLAGS = -O0 -Wall -Werror -g
 
-# Control the build verbosity                                                   
+# Control the build verbosity
 ifeq ("$(VERBOSE)","1")
     Q :=
     VECHO = @true
@@ -49,6 +49,16 @@ test:  $(TESTS)
 	perf stat --repeat 100 \
                 -e cache-misses,cache-references,instructions,cycles \
 				./test_ref --bench $(TEST_DATA)
+
+bench_cpy.txt: test_cpy
+	./test_cpy --bench
+
+bench_ref.txt: test_ref
+	./test_ref --bench
+
+plot: bench_cpy.txt bench_ref.txt
+	gnuplot scripts/runtimept.gp
+	eog runtime2.png &
 
 bench: $(TESTS)
 	@for test in $(TESTS); do\
